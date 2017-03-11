@@ -1,2 +1,55 @@
 ---
-- include: rhn.yml
+- name: clean rhn registration if available
+  command: subscription-manager clean
+  ignore_errors: true
+  tags:
+    - rhn
+
+- name: register with rhn
+  command: subscription-manager register --username {{ rhn_username }} --password {{ rhn_password }}
+  ignore_errors: true
+  tags:
+    - rhn
+  when: (rhn_username is defined) and (rhn_password is defined)
+
+- name: get pool id
+  shell: subscription-manager list --all --available --matches "{{ rhn_subscription }}" --pool-only | head -1
+  register: pool_id
+  until: '"error" not in pool_id'
+  retries: 5
+  delay: 10
+  ignore_errors: yes
+  when: rhn_subscription is defined
+
+- debug: msg="{{ pool_id.stdout }}"
+  when: rhn_subscription is defined
+
+- name: add pool
+  command: subscription-manager attach --pool={{ pool_id.stdout }}
+  register: add_pool
+  until: '"error" not in add_pool'
+  retries: 5
+  delay: 10
+  ignore_errors: yes
+  when: rhn_subscription is defined and pool_id|success and pool_id.stdout != ''
+  tags:
+    - rhn
+
+## setup repos
+- name: disable all existing repositories
+  command: subscription-manager repos --disable "*"
+  tags:
+    - rhn
+  when: rhn_subscription is defined
+
+- name: enable required repositories
+  command: subscription-manager repos --enable={{ item }}
+  with_items: "{{ repo_channels }}"
+  tags:
+    - rhn
+  when: rhn_subscription is defined
+
+- name: install yum-utils package
+  yum: name=yum-utils state=latest
+  tags:
+    - rhn
