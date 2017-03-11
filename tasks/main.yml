@@ -1,0 +1,3 @@
+---
+- include: rhn.yml
+  when: ansible_distribution == 'RedHat'
