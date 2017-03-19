@@ -1,3 +1,6 @@
 ---
 - include: rhn.yml
   when: ansible_distribution == 'RedHat'
+
+- name: enable ntp
+  command: timedatectl set-ntp true
