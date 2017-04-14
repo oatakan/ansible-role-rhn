@@ -64,8 +64,6 @@
     - rhn
   when: rhn_subscription is defined
 
-- debug: msg="{{ enable_repo.stdout }}"
-
 ## setup repos
 #- name: disable all existing repositories
 #  command: subscription-manager repos --disable "*"
