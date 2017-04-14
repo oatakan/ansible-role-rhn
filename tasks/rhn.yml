@@ -35,6 +35,13 @@
 #  tags:
 #    - rhn
 
+- name: clean rhn registration
+  redhat_subscription:
+    state: absent
+  ignore_errors: yes
+  tags:
+    - rhn
+
 - name: register with rhn
   redhat_subscription:
     state: present
