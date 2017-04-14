@@ -57,8 +57,14 @@
     - rhn
   when: (rhn_username is defined) and (rhn_password is defined) and (rhn_subscription is defined)
 
+- name: disable all existing repositories
+  command: subscription-manager repos --disable "*"
+  tags:
+    - rhn
+  when: rhn_subscription is defined
+
 - name: enable repositories
-  command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
+  command: subscription-manager repos --enable={{ repo_channels|join(' --enable=') }}
   register: enable_repo
   tags:
     - rhn
