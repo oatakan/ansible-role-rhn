@@ -63,6 +63,10 @@
   tags:
     - rhn
   when: rhn_subscription is defined
+  register: task_result
+  until: task_result | succeeded
+  retries: 10
+  delay: 5
 
 ## setup repos
 #- name: disable all existing repositories
