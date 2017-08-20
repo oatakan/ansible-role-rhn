@@ -7,9 +7,9 @@
     name: ntp
     state: latest
 
-- name: enable and start ntp
+- name: start ntpd service
   service:
-    name: ntp
+    name: ntpd
     enabled: yes
     state: started
 
