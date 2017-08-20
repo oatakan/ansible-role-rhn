@@ -2,6 +2,17 @@
 - include: rhn.yml
   when: ansible_distribution == 'RedHat'
 
+- name: install ntp
+  yum:
+    name: ntp
+    state: latest
+
+- name: enable and start ntp
+  service:
+    name: ntp
+    enabled: yes
+    state: started
+
 - name: enable ntp
   command: timedatectl set-ntp true
   when: ansible_distribution == 'RedHat'
