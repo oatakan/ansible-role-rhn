@@ -48,6 +48,7 @@
     username: "{{ rhn_username }}"
     password: "{{ rhn_password }}"
     pool: "{{ rhn_subscription }}"
+    force_register: yes
   register: register_rhn
   until: '"error" not in register_rhn'
   retries: 5
