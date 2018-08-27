@@ -55,29 +55,13 @@
   delay: 10
   tags:
     - rhn
-  when: (rhn_username is defined) and (rhn_password is defined) and (rhn_subscription is defined)
-
-#- name: enable repositories
-#  command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
-#  tags:
-#    - rhn
-#  when: rhn_subscription is defined
-#  register: task_result
-#  until: task_result is succeeded
-#  retries: 10
-#  delay: 5
-
-- name: disable all repositories
-  rhsm_repository:
-    name: '*'
-    state: disabled
-  when: rhn_subscription is defined
+  when:
+    - rhn_username is defined
+    - rhn_password is defined
+    - rhn_subscription is defined
 
 - name: enable repositories
-  rhsm_repository:
-    name: "{{ item }}"
-    state: enabled
-  with_items: "{{ repo_channels }}"
+  command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
   tags:
     - rhn
   when: rhn_subscription is defined
