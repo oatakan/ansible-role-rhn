@@ -85,6 +85,8 @@
 #  when: rhn_subscription is defined
 
 - name: install yum-utils package
-  yum: name=yum-utils state=latest
+  yum:
+    name: yum-utils
+    state: latest
   tags:
     - rhn
