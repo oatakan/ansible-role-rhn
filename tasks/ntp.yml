@@ -1,0 +1,15 @@
+---
+
+- name: install ntp
+  yum:
+    name: ntp
+    state: latest
+
+- name: start ntpd service
+  service:
+    name: ntpd
+    enabled: yes
+    state: started
+
+- name: enable ntp
+  command: timedatectl set-ntp true

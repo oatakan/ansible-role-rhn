@@ -1,20 +1,7 @@
 ---
-- include: rhn.yml
+
+- include_tasks: rhn.yml
   when: ansible_distribution == 'RedHat'
 
-- name: install ntp
-  yum:
-    name: ntp
-    state: latest
-  when: ansible_distribution == 'RedHat'
-
-- name: start ntpd service
-  service:
-    name: ntpd
-    enabled: yes
-    state: started
-  when: ansible_distribution == 'RedHat'
-
-- name: enable ntp
-  command: timedatectl set-ntp true
+- include_tasks: ntp.yml
   when: ansible_distribution == 'RedHat'
