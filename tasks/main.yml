@@ -1,7 +1,9 @@
 ---
 
-- include_tasks: rhn.yml
+- name: include rhn subscription tasks
+  include_tasks: rhn.yml
   when: ansible_distribution == 'RedHat'
 
-- include_tasks: ntp.yml
+- name: include ntp tasks
+  include_tasks: ntp.yml
   when: ansible_distribution == 'RedHat'
