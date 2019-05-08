@@ -1,64 +1,68 @@
 ---
-#- name: clean rhn registration if available
-#  command: subscription-manager clean
-#  ignore_errors: true
-#  tags:
-#    - rhn
-#
-#- name: register with rhn
-#  command: subscription-manager register --username {{ rhn_username }} --password {{ rhn_password }}
-#  ignore_errors: true
-#  tags:
-#    - rhn
-#  when: (rhn_username is defined) and (rhn_password is defined)
-#
-#- name: get pool id
-#  shell: subscription-manager list --all --available --matches "{{ rhn_subscription }}" --pool-only | head -1
-#  register: pool_id
-#  until: '"error" not in pool_id'
-#  retries: 5
-#  delay: 10
-#  ignore_errors: yes
-#  when: rhn_subscription is defined
-#
-#- debug: msg="{{ pool_id.stdout }}"
-#  when: rhn_subscription is defined
-#
-#- name: add pool
-#  command: subscription-manager attach --pool={{ pool_id.stdout }}
-#  register: add_pool
-#  until: '"error" not in add_pool'
-#  retries: 5
-#  delay: 10
-#  ignore_errors: yes
-#  when: rhn_subscription is defined and pool_id|success and pool_id.stdout != ''
-#  tags:
-#    - rhn
 
-- name: clean rhn registration
-  redhat_subscription:
-    state: absent
-  ignore_errors: yes
-  tags:
-    - rhn
+- block:
+    - name: clean rhn registration
+      redhat_subscription:
+        state: absent
+      ignore_errors: yes
+      tags:
+        - rhn
 
-- name: register with rhn
-  redhat_subscription:
-    state: present
-    username: "{{ rhn_username }}"
-    password: "{{ rhn_password }}"
-    pool: "{{ rhn_subscription }}"
-    force_register: yes
-  register: register_rhn
-  until: '"error" not in register_rhn'
-  retries: 5
-  delay: 10
-  tags:
-    - rhn
-  when:
-    - rhn_username is defined
-    - rhn_password is defined
-    - rhn_subscription is defined
+    - name: register with rhn
+      redhat_subscription:
+        state: present
+        username: "{{ rhn_username }}"
+        password: "{{ rhn_password }}"
+        pool: "{{ rhn_subscription }}"
+        force_register: yes
+      register: register_rhn
+      until: '"error" not in register_rhn'
+      retries: 5
+      delay: 10
+      tags:
+        - rhn
+      when:
+        - rhn_username is defined
+        - rhn_password is defined
+        - rhn_subscription is defined
+  rescue:
+
+    - name: clean rhn registration if available
+      command: subscription-manager clean
+      ignore_errors: true
+      tags:
+        - rhn
+
+    - name: register with rhn
+      command: subscription-manager register --username {{ rhn_username }} --password {{ rhn_password }}
+      ignore_errors: true
+      tags:
+        - rhn
+      when: (rhn_username is defined) and (rhn_password is defined)
+
+    - name: get pool id
+      shell: subscription-manager list --all --available --matches "{{ rhn_subscription }}" --pool-only | head -1
+      register: pool_id
+      until: '"error" not in pool_id'
+      retries: 5
+      delay: 10
+      ignore_errors: yes
+      when: rhn_subscription is defined
+
+    - debug: msg="{{ pool_id.stdout }}"
+      when: rhn_subscription is defined
+
+    - name: add pool
+      command: subscription-manager attach --pool={{ pool_id.stdout }}
+      register: add_pool
+      until: '"error" not in add_pool'
+      retries: 5
+      delay: 10
+      ignore_errors: yes
+      when: rhn_subscription is defined and pool_id|success and pool_id.stdout != ''
+      tags:
+        - rhn
+
 
 - name: enable repositories
   command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}

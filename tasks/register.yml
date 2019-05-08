@@ -1,0 +1,7 @@
+---
+
+- name: include rhn subscription tasks
+  include_tasks: rhn.yml
+
+- name: include ntp tasks
+  include_tasks: ntp.yml

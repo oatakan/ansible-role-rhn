@@ -1,9 +1,11 @@
 ---
 
-- name: include rhn subscription tasks
-  include_tasks: rhn.yml
-  when: ansible_distribution == 'RedHat'
+- include_tasks: register.yml
+  when:
+    - role_action == 'register'
+    - ansible_distribution == 'RedHat'
 
-- name: include ntp tasks
-  include_tasks: ntp.yml
-  when: ansible_distribution == 'RedHat'
+- include_tasks: unregister.yml
+  when:
+    - role_action == 'unregister'
+    - ansible_distribution == 'RedHat'
