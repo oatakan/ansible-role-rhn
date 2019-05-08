@@ -1,6 +1,7 @@
 ---
 
 - block:
+
     - name: clean rhn registration
       redhat_subscription:
         state: absent
@@ -25,7 +26,10 @@
         - rhn_username is defined
         - rhn_password is defined
         - rhn_subscription is defined
-  rescue:
+
+  when: ansible_distribution_major_version|int < 8
+
+- block:
 
     - name: clean rhn registration if available
       command: subscription-manager clean
@@ -63,6 +67,7 @@
       tags:
         - rhn
 
+  when: ansible_distribution_major_version|int == 8
 
 - name: enable repositories
   command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
