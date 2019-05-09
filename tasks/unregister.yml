@@ -5,7 +5,6 @@
     - name: clean rhn registration
       redhat_subscription:
         state: absent
-      ignore_errors: yes
 
   rescue:
 
