@@ -63,7 +63,7 @@
       retries: 5
       delay: 10
       ignore_errors: yes
-      when: rhn_subscription is defined and pool_id|success and pool_id.stdout != ''
+      when: rhn_subscription is defined and pool_id is succeeded and pool_id.stdout != ''
       tags:
         - rhn
 
