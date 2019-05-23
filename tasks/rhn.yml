@@ -69,9 +69,6 @@
 
   when: ansible_distribution_major_version|int == 8
 
-- debug:
-    var: repo_channels
-
 - name: enable repositories
   command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
   tags:
@@ -81,9 +78,6 @@
   until: task_result is succeeded
   retries: 10
   delay: 5
-
-- debug:
-    var: task_result
 
 ## setup repos
 #- name: disable all existing repositories
