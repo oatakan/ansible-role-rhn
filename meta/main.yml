@@ -1,6 +1,7 @@
 galaxy_info:
   author: Orcun Atakan
   description: Ansible galaxy role for registering with Red Hat Network
+  role_name: rhn
   company: Red Hat
 
   license: license (GPLv2, CC-BY, etc)
