@@ -63,7 +63,10 @@
       retries: 5
       delay: 10
       ignore_errors: yes
-      when: rhn_subscription is defined and pool_id is succeeded and pool_id.stdout != ''
+      when:
+        - rhn_subscription is defined
+        - pool_id is succeeded
+        - pool_id.stdout | length > 0
       tags:
         - rhn
 
@@ -79,23 +82,9 @@
   retries: 10
   delay: 5
 
-## setup repos
-#- name: disable all existing repositories
-#  command: subscription-manager repos --disable "*"
-#  tags:
-#    - rhn
-#  when: rhn_subscription is defined
-#
-#- name: enable required repositories
-#  command: subscription-manager repos --enable={{ item }}
-#  with_items: "{{ repo_channels }}"
-#  tags:
-#    - rhn
-#  when: rhn_subscription is defined
-
 - name: install yum-utils package
   yum:
     name: yum-utils
-    state: latest
+    state: present
   tags:
     - rhn
