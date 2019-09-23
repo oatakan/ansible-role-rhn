@@ -1,14 +1,6 @@
 ---
 
 - block:
-
-#    - name: clean rhn registration
-#      redhat_subscription:
-#        state: absent
-#      ignore_errors: yes
-#      tags:
-#        - rhn
-
     - name: register with rhn
       redhat_subscription:
         state: present
@@ -17,79 +9,64 @@
         pool: "{{ rhn_subscription }}"
         force_register: yes
       register: register_rhn
-      until: '"error" not in register_rhn'
-      retries: 5
-      delay: 10
-      tags:
-        - rhn
       when:
         - rhn_username is defined
         - rhn_password is defined
         - rhn_subscription is defined
 
-#  when: ansible_distribution_major_version|int < 8
-#
-#- block:
-#
-#    - name: clean rhn registration if available
-#      command: subscription-manager clean
-#      ignore_errors: true
-#      tags:
-#        - rhn
-#
-#    - name: register with rhn
-#      command: subscription-manager register --username {{ rhn_username }} --password {{ rhn_password }}
-#      ignore_errors: true
-#      tags:
-#        - rhn
-#      when: (rhn_username is defined) and (rhn_password is defined)
-#
-#    - name: get pool id
-#      shell: subscription-manager list --all --available --matches "{{ rhn_subscription }}" --pool-only | head -1
-#      register: pool_id
-#      until: '"error" not in pool_id'
-#      retries: 5
-#      delay: 10
-#      ignore_errors: yes
-#      when: rhn_subscription is defined
-#
-#    - debug: msg="{{ pool_id.stdout }}"
-#      when: rhn_subscription is defined
-#
-#    - name: add pool
-#      command: subscription-manager attach --pool={{ pool_id.stdout }}
-#      register: add_pool
-#      until: '"error" not in add_pool'
-#      retries: 5
-#      delay: 10
-#      ignore_errors: yes
-#      when:
-#        - rhn_subscription is defined
-#        - pool_id is succeeded
-#        - pool_id.stdout | length > 0
-#      tags:
-#        - rhn
-#
-#  when: ansible_distribution_major_version|int == 8
+  rescue:
+    - name: clean rhn registration if available
+      command: subscription-manager clean
+      ignore_errors: true
 
-#- name: enable repositories
-#  command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
-#  tags:
-#    - rhn
-#  when: rhn_subscription is defined
-#  register: task_result
-#  until: task_result is succeeded
-#  retries: 10
-#  delay: 5
+    - name: register with rhn
+      command: subscription-manager register --username {{ rhn_username }} --password {{ rhn_password }}
+      ignore_errors: true
+      no_log: True
+      when:
+        - rhn_username is defined
+        - rhn_password is defined
 
-- name: enable repositories
-  rhsm_repository:
-    name: "{{ repo_channels }}"
-    purge: yes
+    - name: get pool id
+      shell: subscription-manager list --all --available --matches "{{ rhn_subscription }}" --pool-only | head -1
+      register: pool_id
+      until: '"error" not in pool_id'
+      retries: 5
+      delay: 10
+      ignore_errors: yes
+      when: rhn_subscription is defined
 
-- name: install yum-utils package
+    - debug: msg="{{ pool_id.stdout }}"
+      when: rhn_subscription is defined
+
+    - name: add pool
+      command: subscription-manager attach --pool={{ pool_id.stdout }}
+      register: add_pool
+      until: '"error" not in add_pool'
+      retries: 5
+      delay: 10
+      ignore_errors: yes
+      when:
+        - rhn_subscription is defined
+        - pool_id is succeeded
+        - pool_id.stdout | length > 0
+
+- block:
+    - name: enable repositories
+      rhsm_repository:
+        name: "{{ repo_channels }}"
+        purge: yes
+
+  rescue:
+    - name: enable repositories
+      command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
+      when: rhn_subscription is defined
+      register: task_result
+      until: task_result is succeeded
+      retries: 10
+      delay: 5
+
+- name: ensure yum-utils package present
   yum:
     name: yum-utils
     state: present
-  tags:
-    - rhn
