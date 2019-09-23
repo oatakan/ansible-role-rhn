@@ -72,15 +72,20 @@
 #
 #  when: ansible_distribution_major_version|int == 8
 
+#- name: enable repositories
+#  command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
+#  tags:
+#    - rhn
+#  when: rhn_subscription is defined
+#  register: task_result
+#  until: task_result is succeeded
+#  retries: 10
+#  delay: 5
+
 - name: enable repositories
-  command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
-  tags:
-    - rhn
-  when: rhn_subscription is defined
-  register: task_result
-  until: task_result is succeeded
-  retries: 10
-  delay: 5
+  rhsm_repository:
+    name: "{{ repo_channels }}"
+    purge: yes
 
 - name: install yum-utils package
   yum:
