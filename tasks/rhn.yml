@@ -7,7 +7,7 @@
         username: "{{ rhn_username }}"
         password: "{{ rhn_password }}"
         pool: "{{ rhn_subscription }}"
-        force_register: yes
+        force_register: "{{ rhn_force_register }}"
       register: register_rhn
       when:
         - rhn_username is defined

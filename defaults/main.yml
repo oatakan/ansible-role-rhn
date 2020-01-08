@@ -2,6 +2,8 @@
 
 role_action: register
 
+rhn_force_register: yes
+
 rhel_7_repo_channels:
   - rhel-7-server-rpms
   - rhel-7-server-rh-common-rpms
