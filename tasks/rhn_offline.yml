@@ -1,0 +1,10 @@
+---
+
+- name: Add offline repos
+  yum_repository:
+    name: "{{ item }}"
+    description: "{{ item }}"
+    file: offline_repos
+    baseurl: "{{ rhn_repo_base_url }}/{{ item }}"
+    gpgcheck: no
+  loop: "{{ repo_channels }}"

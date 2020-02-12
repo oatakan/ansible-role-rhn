@@ -1,0 +1,8 @@
+---
+
+- name: Remove offline repos
+  yum_repository:
+    name: "{{ item }}"
+    file: offline_repos
+    state: absent
+  loop: "{{ repo_channels }}"
