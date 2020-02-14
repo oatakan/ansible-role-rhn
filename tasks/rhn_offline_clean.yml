@@ -1,6 +1,6 @@
 ---
 
-- name: Remove offline repos
+- name: remove offline repos
   yum_repository:
     name: "{{ item }}"
     file: offline_repos

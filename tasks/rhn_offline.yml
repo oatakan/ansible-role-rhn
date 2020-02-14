@@ -1,6 +1,11 @@
 ---
 
-- name: Add offline repos
+- name: disable built-in redhat repo
+  file:
+    path: /etc/yum.repos.d/redhat.repo
+    state: absent
+
+- name: add offline repos
   yum_repository:
     name: "{{ item }}"
     description: "{{ item }}"
