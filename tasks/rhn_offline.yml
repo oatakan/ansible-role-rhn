@@ -2,6 +2,7 @@
 
 - name: disable built-in redhat repos
   command: subscription-manager config --rhsm.manage_repos=0
+  changed_when: True
   ignore_errors: yes
 
 - name: add offline repos
