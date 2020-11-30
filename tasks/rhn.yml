@@ -9,6 +9,9 @@
         pool: "{{ rhn_subscription }}"
         force_register: "{{ rhn_force_register }}"
       register: register_rhn
+      until: register_rhn is success
+      delay: 3
+      retries: 5
       when:
         - rhn_username is defined
         - rhn_password is defined
