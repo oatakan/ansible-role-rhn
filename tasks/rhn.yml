@@ -33,7 +33,7 @@
     - name: get pool id
       shell: subscription-manager list --all --available --matches "{{ rhn_subscription }}" --pool-only | head -1
       register: pool_id
-      until: '"error" not in pool_id'
+      until: pool_id is success
       retries: 5
       delay: 10
       ignore_errors: yes
@@ -45,7 +45,7 @@
     - name: add pool
       command: subscription-manager attach --pool={{ pool_id.stdout }}
       register: add_pool
-      until: '"error" not in add_pool'
+      until: add_pool is success
       retries: 5
       delay: 10
       ignore_errors: yes
