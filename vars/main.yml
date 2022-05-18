@@ -1,6 +1,6 @@
 ---
 
-repo_channels: "{{ rhel_8_repo_channels if (ansible_distribution_major_version|int == 8) else rhel_7_repo_channels }}"
+repo_channels: rhel_{{ ansible_distribution_major_version }}_repo_channels
 
 rhn_pool: "{{ omit if (rhn_auto_attach|bool) else rhn_subscription }}"
 
