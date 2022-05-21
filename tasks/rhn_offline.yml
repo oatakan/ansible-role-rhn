@@ -12,4 +12,4 @@
     file: offline_repos
     baseurl: "{{ rhn_repo_base_url }}/{{ item }}"
     gpgcheck: no
-  loop: "{{ vars[repo_channels] }}"
+  loop: "{{ repo_channels }}"

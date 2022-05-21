@@ -72,12 +72,12 @@
 - block:
     - name: enable repositories
       rhsm_repository:
-        name: "{{ vars[repo_channels] }}"
+        name: "{{ repo_channels }}"
         purge: yes
 
   rescue:
     - name: enable repositories
-      command: subscription-manager repos --disable "*" --enable={{ vars[repo_channels]|join(' --enable=') }}
+      command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
       when: rhn_subscription is defined
       register: task_result
       until: task_result is succeeded

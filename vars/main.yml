@@ -1,6 +1,6 @@
 ---
 
-repo_channels: rhel_{{ ansible_distribution_major_version }}_repo_channels
+repo_channels: "{{ lookup('vars', 'rhel_' + ansible_distribution_major_version + '_repo_channels') }}"
 
 rhn_pool: "{{ omit if (rhn_auto_attach|bool) else rhn_subscription }}"
 

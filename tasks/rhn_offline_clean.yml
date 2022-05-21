@@ -5,4 +5,4 @@
     name: "{{ item }}"
     file: offline_repos
     state: absent
-  loop: "{{ vars[repo_channels] }}"
+  loop: "{{ repo_channels }}"
