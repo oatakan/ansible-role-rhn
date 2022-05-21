@@ -1,12 +1,12 @@
 ---
 
 - name: disable built-in redhat repos
-  command: subscription-manager config --rhsm.manage_repos=0
+  ansible.builtin.command: subscription-manager config --rhsm.manage_repos=0
   changed_when: True
   ignore_errors: yes
 
 - name: add offline repos
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: "{{ item }}"
     description: "{{ item }}"
     file: offline_repos

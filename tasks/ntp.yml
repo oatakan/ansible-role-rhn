@@ -1,17 +1,17 @@
 ---
 
 - name: install ntp
-  yum:
+  ansible.builtin.yum:
     name: ntp
     state: present
 
 - name: start ntpd service
-  service:
+  ansible.builtin.service:
     name: ntpd
     enabled: yes
     state: started
 
 - name: enable ntp
-  command: timedatectl set-ntp true
+  ansible.builtin.command: timedatectl set-ntp true
   changed_when: False
   check_mode: no

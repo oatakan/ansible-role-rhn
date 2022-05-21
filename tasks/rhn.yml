@@ -1,13 +1,13 @@
 ---
 
 - name: enable built-in redhat repos
-  command: subscription-manager config --rhsm.manage_repos=1
+  ansible.builtin.command: subscription-manager config --rhsm.manage_repos=1
   changed_when: True
   ignore_errors: yes
 
 - block:
     - name: register with rhn
-      redhat_subscription:
+      community.general.redhat_subscription:
         state: present
         username: "{{ rhn_username }}"
         password: "{{ rhn_password }}"
@@ -25,11 +25,11 @@
 
   rescue:
     - name: clean rhn registration if available
-      command: subscription-manager clean
+      ansible.builtin.command: subscription-manager clean
       ignore_errors: true
 
     - name: register with rhn
-      command: subscription-manager register --username {{ rhn_username }} --password {{ rhn_password }}
+      ansible.builtin.command: subscription-manager register --username {{ rhn_username }} --password {{ rhn_password }}
       ignore_errors: true
       no_log: True
       when:
@@ -37,13 +37,13 @@
         - rhn_password is defined
 
     - name: auto attach subscription
-      command: subscription-manager attach --auto
+      ansible.builtin.command: subscription-manager attach --auto
       ignore_errors: true
       when: rhn_auto_attach|bool
 
     - block:
         - name: get pool id
-          shell: >
+          ansible.builtin.shell: >
             subscription-manager list
             --all --available --matches "{{ rhn_subscription }}"
             --pool-only | {{ rhn_pool_order }}
@@ -53,10 +53,11 @@
           delay: 10
           ignore_errors: yes
 
-        - debug: msg="{{ pool_id.stdout }}"
+        - debug:
+            msg: "{{ pool_id.stdout }}"
 
         - name: add pool
-          command: subscription-manager attach --pool={{ pool_id.stdout }}
+          ansible.builtin.command: subscription-manager attach --pool={{ pool_id.stdout }}
           register: add_pool
           until: add_pool is success
           retries: 5
@@ -71,13 +72,13 @@
 
 - block:
     - name: enable repositories
-      rhsm_repository:
+      community.general.rhsm_repository:
         name: "{{ repo_channels }}"
         purge: yes
 
   rescue:
     - name: enable repositories
-      command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
+      ansible.builtin.command: subscription-manager repos --disable "*" --enable={{ repo_channels|join(' --enable=') }}
       when: rhn_subscription is defined
       register: task_result
       until: task_result is succeeded
@@ -85,6 +86,6 @@
       delay: 5
 
 - name: ensure yum-utils package present
-  yum:
+  ansible.builtin.yum:
     name: yum-utils
     state: present

@@ -1,7 +1,7 @@
 ---
 
 - name: remove offline repos
-  yum_repository:
+  ansible.builtin.yum_repository:
     name: "{{ item }}"
     file: offline_repos
     state: absent
