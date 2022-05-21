@@ -19,6 +19,6 @@ rhel_8_repo_channels:
   - rhel-8-for-x86_64-appstream-rpms
 
 rhel_9_repo_channels:
-  - rhel-9-for-x86_64-baseos-isos
+  - rhel-9-for-x86_64-baseos-rpms
   - rhel-9-for-x86_64-supplementary-rpms
   - rhel-9-for-x86_64-appstream-rpms
