@@ -3,10 +3,10 @@
 - name: include rhn subscription tasks
   block:
     - include_tasks: clean_rhn.yml
-      when: ansible_version.full is version('2.9', '>')
+      when: ansible_version.full is version('2.10', '>=')
 
     - include_tasks: clean_rhn_29.yml
-      when: ansible_version.full is version('2.9', '<=')
+      when: ansible_version.full is version('2.10', '<')
   when: not rhn_offline | bool
 
 - name: include offline repo removal
