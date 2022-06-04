@@ -6,11 +6,11 @@
   ignore_errors: yes
 
 - block:
-    include_tasks: redhat_subscription_register.yml
-    when: ansible_version.full is version('2.9', '>')
+    - include_tasks: redhat_subscription_register.yml
+      when: ansible_version.full is version('2.9', '>')
 
-    include_tasks: redhat_subscription_register_29.yml
-    when: ansible_version.full is version('2.9', '>=')
+    - include_tasks: redhat_subscription_register_29.yml
+      when: ansible_version.full is version('2.9', '>=')
 
   rescue:
     - name: clean rhn registration if available
