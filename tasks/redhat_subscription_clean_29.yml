@@ -1,0 +1,4 @@
+---
+- name: clean rhn registration
+  redhat_subscription:
+    state: absent

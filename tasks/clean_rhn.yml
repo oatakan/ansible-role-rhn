@@ -1,9 +1,11 @@
 ---
 
 - block:
-    - name: clean rhn registration
-      community.general.redhat_subscription:
-        state: absent
+    include_tasks: redhat_subscription_clean.yml
+    when: ansible_version.full is version('2.9', '>')
+
+    include_tasks: redhat_subscription_clean_29.yml
+    when: ansible_version.full is version('2.9', '>=')
 
   rescue:
     - name: unregister rhn if available

@@ -6,22 +6,11 @@
   ignore_errors: yes
 
 - block:
-    - name: register with rhn
-      community.general.redhat_subscription:
-        state: present
-        username: "{{ rhn_username }}"
-        password: "{{ rhn_password }}"
-        auto_attach: "{{ rhn_auto_attach }}"
-        pool: "{{ rhn_pool }}"
-        force_register: "{{ rhn_force_register }}"
-      register: register_rhn
-      until: register_rhn is success
-      delay: 3
-      retries: 5
-      when:
-        - rhn_username is defined
-        - rhn_password is defined
-        - rhn_subscription is defined or (rhn_subscription is undefined and rhn_auto_attach|bool)
+    include_tasks: redhat_subscription_register.yml
+    when: ansible_version.full is version('2.9', '>')
+
+    include_tasks: redhat_subscription_register_29.yml
+    when: ansible_version.full is version('2.9', '>=')
 
   rescue:
     - name: clean rhn registration if available
