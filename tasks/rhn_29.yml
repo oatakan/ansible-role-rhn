@@ -7,7 +7,7 @@
 
 - block:
     - name: register with rhn
-      community.general.redhat_subscription:
+      redhat_subscription:
         state: present
         username: "{{ rhn_username }}"
         password: "{{ rhn_password }}"
@@ -72,7 +72,7 @@
 
 - block:
     - name: enable repositories
-      community.general.rhsm_repository:
+      rhsm_repository:
         name: "{{ repo_channels }}"
         purge: yes
 

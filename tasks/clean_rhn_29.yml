@@ -2,7 +2,7 @@
 
 - block:
     - name: clean rhn registration
-      community.general.redhat_subscription:
+      redhat_subscription:
         state: absent
 
   rescue:

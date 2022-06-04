@@ -1,4 +1,0 @@
----
-- name: clean rhn registration
-  community.general.redhat_subscription:
-    state: absent

@@ -1,7 +1,12 @@
 ---
 
 - name: include rhn subscription tasks
-  include_tasks: rhn.yml
+  block:
+    - include_tasks: rhn.yml
+      when: ansible_version.full is version('2.9', '>')
+
+    - include_tasks: rhn_29.yml
+      when: ansible_version.full is version('2.9', '<=')
   when: not rhn_offline | bool
 
 - name: include offline repos
