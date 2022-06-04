@@ -1,5 +1,8 @@
 ---
 
+- debug:
+    msg: "{{ ansible_version.full }}"
+
 - name: include rhn subscription tasks
   block:
     - include_tasks: rhn.yml
