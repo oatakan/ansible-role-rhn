@@ -8,10 +8,10 @@
 - name: start ntpd service
   ansible.builtin.service:
     name: ntpd
-    enabled: yes
+    enabled: true
     state: started
 
 - name: enable ntp
   ansible.builtin.command: timedatectl set-ntp true
-  changed_when: False
-  check_mode: no
+  changed_when: false
+  check_mode: false

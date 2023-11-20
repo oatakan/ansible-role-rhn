@@ -1,6 +1,7 @@
 ---
 
-- block:
+- name: clean rhn registration
+  block:
     - name: clean rhn registration
       redhat_subscription:
         state: absent
@@ -8,4 +9,5 @@
   rescue:
     - name: unregister rhn if available
       ansible.builtin.command: subscription-manager unregister
+      changed_when: true
       ignore_errors: true

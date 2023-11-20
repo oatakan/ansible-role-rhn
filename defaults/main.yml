@@ -2,10 +2,10 @@
 
 role_action: register
 
-rhn_force_register: yes
-rhn_auto_attach: yes
+rhn_force_register: true
+rhn_auto_attach: true
 
-rhn_offline: no
+rhn_offline: false
 
 rhel_7_repo_channels:
   - rhel-7-server-rpms
@@ -14,11 +14,11 @@ rhel_7_repo_channels:
   - rhel-7-server-aus-optional-rpms
 
 rhel_8_repo_channels:
-  - rhel-8-for-x86_64-baseos-rpms
-  - rhel-8-for-x86_64-supplementary-rpms
-  - rhel-8-for-x86_64-appstream-rpms
+  - rhel-8-for-{{ ansible_architecture | default('x86_64') }}-baseos-rpms
+  - rhel-8-for-{{ ansible_architecture | default('x86_64') }}-supplementary-rpms
+  - rhel-8-for-{{ ansible_architecture | default('x86_64') }}-appstream-rpms
 
 rhel_9_repo_channels:
-  - rhel-9-for-x86_64-baseos-rpms
-  - rhel-9-for-x86_64-supplementary-rpms
-  - rhel-9-for-x86_64-appstream-rpms
+  - rhel-9-for-{{ ansible_architecture | default('x86_64') }}-baseos-rpms
+  - rhel-9-for-{{ ansible_architecture | default('x86_64') }}-supplementary-rpms
+  - rhel-9-for-{{ ansible_architecture | default('x86_64') }}-appstream-rpms
