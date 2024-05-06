@@ -13,6 +13,14 @@
     - rhn_api_offline_token is defined
     - rhn_subscriptions is defined or rhn_subscription is defined
 
+- name: set rhn_auto_attach to true if no subscription name and pool id specified
+  ansible.builtin.set_fact:
+    rhn_auto_attach: true
+  when:
+    - rhn_subscriptions is undefined
+    - rhn_subscription is undefined
+    - rhn_pool_ids is undefined or not rhn_pool_ids | length
+
 - name: register
   block:
     - name: register with rhn
@@ -31,7 +39,7 @@
       when:
         - rhn_username is defined
         - rhn_password is defined
-        - rhn_subscription is defined or (rhn_subscription is undefined and rhn_auto_attach|bool)
+        - (rhn_pool_ids is defined and rhn_pool_ids | length) or rhn_subscriptions is defined or rhn_subscription is defined or (rhn_auto_attach|bool)
 
   rescue:
     - name: clean rhn registration if available
@@ -74,7 +82,7 @@
                 loop_var: _rhn_subscription
 
             - name: set rhn_pool_ids
-              ansible.builtin.set_facts:
+              ansible.builtin.set_fact:
                 rhn_pool_ids: "{{ pool_id.results | map(attribute='stdout') }}"
 
             - name: show rhn pool ids

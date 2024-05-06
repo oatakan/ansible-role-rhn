@@ -2,8 +2,8 @@
 
 repo_channels: "{{ lookup('vars', 'rhel_' + ansible_distribution_major_version + '_repo_channels') }}"
 
-_rhn_pool: "{{ omit if (rhn_auto_attach | bool or (rhn_pool_ids defined and rhn_pool_ids | length)) else rhn_subscription }}"
-_rhn_pool_ids: "{{ omit if (rhn_auto_attach | bool or rhn_pool_ids is undefined or not rhn_pool_ids | length) else rhn_pool_ids }}"
+_rhn_pool: "{{ omit if ((rhn_auto_attach | bool) or (rhn_pool_ids is defined and rhn_pool_ids | length)) else rhn_subscription }}"
+_rhn_pool_ids: "{{ omit if ((rhn_auto_attach | bool) or (rhn_pool_ids is undefined) or (not rhn_pool_ids | length)) else rhn_pool_ids }}"
 
 # physical is listed as the first item in the list and virtual is the 2nd item
 rhn_pool_order: "{{ 'tail -1' if ((ansible_virtualization_role | default('guest')) == 'guest') else 'head -1' }}"
