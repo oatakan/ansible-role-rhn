@@ -1,0 +1,47 @@
+---
+
+# this will require rhn_api_offline_token
+- name: reset rhn_pool_ids
+  ansible.builtin.set_fact:
+    rhn_pool_ids: []
+
+- block:
+    - name: generate refresh token
+      ansible.builtin.uri:
+        url: "{{ rhn_token_api_url }}"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          grant_type: refresh_token
+          client_id: rhsm-api
+          refresh_token: "{{ rhn_api_offline_token }}"
+        return_content: true
+      register: rhn_api_refresh_token
+
+    - name: get subscription list
+      ansible.builtin.uri:
+        url: "{{ rhn_sub_list_url }}"
+        headers:
+          Content-Type: application/json
+          Authorization: "Bearer {{ rhn_api_refresh_token.json.access_token }}"
+        return_content: true
+      register: rhn_sub_list
+
+    - name: find matching pool IDs
+      ansible.builtin.set_fact:
+        rhn_pool_ids: "{{ rhn_pool_ids | default([]) + [_first_available_pool.id] }}"
+      loop: "{{ rhn_subscriptions | default([rhn_subscription]) }}"
+      vars:
+        _matching_pools: "{{ (rhn_sub_list.json.body | selectattr('subscriptionName', '==', item) | first).pools }}"
+        _first_available_pool: "{{ _matching_pools | json_query(_query) | list | first }}"
+        _query: '[?consumed < quantity]'
+      when: _first_available_pool is defined
+
+    - name: show rhn pool ids
+      ansible.builtin.debug:
+        msg: "{{ rhn_pool_ids }}"
+
+  rescue:
+    - name: something went wrong with rhn api access
+      ansible.builtin.debug:
+        msg: "could not determine rhn pool ids, we'll try to use rhn_subscription"

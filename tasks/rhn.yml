@@ -5,6 +5,14 @@
   changed_when: true
   ignore_errors: true
 
+- name: determine pool ids
+  ansible.builtin.include_tasks: rhn_get_pool_ids.yml
+  when:
+    - not rhn_auto_attach
+    - rhn_pool_ids is undefined or not rhn_pool_ids | length
+    - rhn_api_offline_token is defined
+    - rhn_subscriptions is defined or rhn_subscription is defined
+
 - name: register
   block:
     - name: register with rhn
@@ -13,7 +21,8 @@
         username: "{{ rhn_username }}"
         password: "{{ rhn_password }}"
         auto_attach: "{{ rhn_auto_attach }}"
-        pool: "{{ rhn_pool }}"
+        pool: "{{ _rhn_pool }}"
+        pool_ids: "{{ _rhn_pool_ids }}"
         force_register: "{{ rhn_force_register }}"
       register: register_rhn
       until: register_rhn is success
@@ -47,24 +56,35 @@
 
     - name: pool id
       block:
-        - name: get pool id
-          ansible.builtin.shell: >
-            subscription-manager list
-            --all --available --matches "{{ rhn_subscription }}"
-            --pool-only | {{ rhn_pool_order }}
-          register: pool_id
-          until: pool_id is success
-          retries: 5
-          delay: 10
-          ignore_errors: true
-          changed_when: false
+        - name: pool id
+          block:
+            - name: get pool ids
+              ansible.builtin.shell: >
+                subscription-manager list
+                --all --available --matches "{{ _rhn_subscription }}"
+                --pool-only | {{ rhn_pool_order }}
+              register: pool_id
+              until: pool_id is success
+              retries: 5
+              delay: 10
+              ignore_errors: true
+              changed_when: false
+              loop: "{{ rhn_subscriptions | default([rhn_subscription]) }}"
+              loop_control:
+                loop_var: _rhn_subscription
 
-        - name: debug pood pid
-          ansible.builtin.debug:
-            msg: "{{ pool_id.stdout }}"
+            - name: set rhn_pool_ids
+              ansible.builtin.set_facts:
+                rhn_pool_ids: "{{ pool_id.results | map(attribute='stdout') }}"
+
+            - name: show rhn pool ids
+              ansible.builtin.debug:
+                msg: "{{ rhn_pool_ids }}"
+              when: rhn_pool_ids is defined
+          when: rhn_pool_ids is undefined or not rhn_pool_ids
 
         - name: add pool
-          ansible.builtin.command: subscription-manager attach --pool={{ pool_id.stdout }}
+          ansible.builtin.command: subscription-manager attach --pool={{ rhn_pool_ids | join(' --pool=') }}
           register: add_pool
           until: add_pool is success
           retries: 5
@@ -72,11 +92,11 @@
           ignore_errors: true
           changed_when: true
           when:
-            - pool_id is succeeded
-            - pool_id.stdout | length > 0
+            - rhn_pool_ids is defined
+            - rhn_pool_ids | length
       when:
         - not rhn_auto_attach|bool
-        - rhn_subscription is defined
+        - rhn_subscriptions is defined or rhn_subscription is defined
 
 - name: enable repositories
   block:

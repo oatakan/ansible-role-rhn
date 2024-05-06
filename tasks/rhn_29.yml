@@ -1,5 +1,6 @@
 ---
 
+# deprecated
 - name: enable built-in redhat repos
   ansible.builtin.command: subscription-manager config --rhsm.manage_repos=1
   changed_when: true

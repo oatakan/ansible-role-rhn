@@ -3,9 +3,12 @@
 role_action: register
 
 rhn_force_register: true
-rhn_auto_attach: true
+rhn_auto_attach: false
 
 rhn_offline: false
+
+rhn_token_api_url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+rhn_sub_list_url: https://api.access.redhat.com/management/v1/subscriptions
 
 rhel_7_repo_channels:
   - rhel-7-server-rpms

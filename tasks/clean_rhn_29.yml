@@ -1,5 +1,6 @@
 ---
 
+# deprecated
 - name: clean rhn registration
   block:
     - name: clean rhn registration
