@@ -25,3 +25,8 @@ rhel_9_repo_channels:
   - rhel-9-for-{{ ansible_architecture | default('x86_64') }}-baseos-rpms
   - rhel-9-for-{{ ansible_architecture | default('x86_64') }}-supplementary-rpms
   - rhel-9-for-{{ ansible_architecture | default('x86_64') }}-appstream-rpms
+
+rhel_10_repo_channels:
+  - rhel-10-for-{{ ansible_architecture | default('x86_64') }}-baseos-rpms
+  - rhel-10-for-{{ ansible_architecture | default('x86_64') }}-supplementary-rpms
+  - rhel-10-for-{{ ansible_architecture | default('x86_64') }}-appstream-rpms

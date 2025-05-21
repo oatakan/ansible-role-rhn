@@ -29,7 +29,6 @@
         username: "{{ rhn_username }}"
         password: "{{ rhn_password }}"
         auto_attach: "{{ rhn_auto_attach }}"
-        pool: "{{ _rhn_pool }}"
         pool_ids: "{{ _rhn_pool_ids }}"
         force_register: "{{ rhn_force_register }}"
       register: register_rhn
@@ -73,8 +72,8 @@
                 --pool-only | {{ rhn_pool_order }}
               register: pool_id
               until: pool_id is success
-              retries: 5
-              delay: 10
+              retries: 3
+              delay: 5
               ignore_errors: true
               changed_when: false
               loop: "{{ rhn_subscriptions | default([rhn_subscription]) }}"
@@ -95,8 +94,8 @@
           ansible.builtin.command: subscription-manager attach --pool={{ rhn_pool_ids | join(' --pool=') }}
           register: add_pool
           until: add_pool is success
-          retries: 5
-          delay: 10
+          retries: 3
+          delay: 5
           ignore_errors: true
           changed_when: true
           when:
@@ -120,7 +119,7 @@
       when: rhn_subscription is defined
       register: task_result
       until: task_result is succeeded
-      retries: 10
+      retries: 3
       delay: 5
       changed_when: true
 
